@@ -23,7 +23,7 @@ jobs:
     displayName: 'Publish Artifact'
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
-      artifact: 'publish'
+      artifact: 'kmm'
 
 - deployment: DeployToDestination
   displayName: 'Deploy to Destination'
@@ -35,13 +35,13 @@ jobs:
       deploy:
         steps:
         - download: current
-          artifact: 'publish'
+          artifact: 'kmm'
           displayName: 'Download artifact'
 
         - task: SSH@0
-          displayName: 'Copy Files to /var/www/html on Destination'
+          displayName: 'Copy Files to /var/www on Destination'
           inputs:
             sshEndpoint: kavishssh  # Replace with your SSH service connection
             runOptions: 'inline'
             inline: |
-              sudo cp -r $(Pipeline.Workspace)/* /var/www/html
+              sudo cp -r $(Pipeline.Workspace)/* /var/www
