@@ -28,7 +28,7 @@ jobs:
 - deployment: DeployToDestination
   displayName: 'Deploy to Destination'
   pool:
-    vmImage: basole
+    name: basole
   environment: kmmenv  # Replace with your environment name
   strategy:
     runOnce:
