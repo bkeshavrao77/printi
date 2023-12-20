@@ -23,7 +23,7 @@ jobs:
     displayName: 'Publish Artifact'
     inputs:
       targetPath: '$(Build.ArtifactStagingDirectory)'
-      artifact: 'kmm'
+      artifact: 'publish'
 
 - deployment: DeployToDestination
   displayName: 'Deploy to Destination'
@@ -35,7 +35,7 @@ jobs:
       deploy:
         steps:
         - download: current
-          artifact: 'kmm'
+          artifact: 'publish'
           displayName: 'Download artifact'
 
         - task: SSH@0
