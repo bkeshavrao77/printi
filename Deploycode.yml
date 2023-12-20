@@ -1,0 +1,37 @@
+trigger:
+- main  # Replace 'main' with the branch you want to trigger on
+
+pool: basole
+  
+
+jobs:
+- job: Build
+  displayName: 'Build Job'
+  steps:
+  - checkout: self
+
+  # Add your build steps here
+  # For example:
+  # - script: echo 'Building the code'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifact: 'publish'
+
+- deployment: DeployToAgentPool
+  displayName: 'Deploy to Agent Pool'
+  pool:
+    name: basole  # Replace with the name of your agent pool
+  environment: kmmenv  # Replace with the name of your environment
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - download: current
+          artifact: 'publish'
+          displayName: 'Download artifact'
+
+        # Add your deployment steps here
+        # For example:
+        # - script: echo 'Deploying the code to the agent pool'
