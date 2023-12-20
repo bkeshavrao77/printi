@@ -1,0 +1,47 @@
+trigger:
+- main  # Replace 'main' with the branch you want to trigger on
+
+pool:
+  name: basole
+
+jobs:
+- job: DeployToAgentPool
+  displayName: basole
+  workspace:
+    clean: all
+  steps:
+  - checkout: self
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to Agent Pool'
+    inputs:
+      SourceFolder: '$(Build.SourcesDirectory)'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish Artifact'
+    inputs:
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+      artifact: 'publish'
+
+- deployment: DeployToDestination
+  displayName: 'Deploy to Destination'
+  pool:
+    vmImage: basole
+  environment: kmmenv  # Replace with your environment name
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - download: current
+          artifact: 'publish'
+          displayName: 'Download artifact'
+
+        - task: SSH@0
+          displayName: 'Copy Files to /var/www/html on Destination'
+          inputs:
+            sshEndpoint: kavishssh  # Replace with your SSH service connection
+            runOptions: 'inline'
+            inline: |
+              sudo cp -r $(Pipeline.Workspace)/* /var/www/html
