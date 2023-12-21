@@ -44,4 +44,4 @@ jobs:
             sshEndpoint: kavishssh  # Replace with your SSH service connection
             runOptions: 'inline'
             inline: |
-              sudo cp -r $(Pipeline.Workspace)/* /var/www/kmm
+             sudo rsync -r --delete $(Pipeline.Workspace)/* /var/www/kmm
