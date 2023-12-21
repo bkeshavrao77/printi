@@ -1,0 +1,39 @@
+trigger:
+  branches:
+    include:
+      - develop
+      - quality
+
+pr:
+  branches:
+    exclude:
+      - '*'
+
+jobs:
+- job: BuildAndDeploy
+  pool:
+    name: basole
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.10.x'
+      addToPath: true
+
+  - script: |
+      python -m venv venv
+      source venv/bin/activate
+      python -m pip install --upgrade pip
+      pip install -r requirements.txt
+    displayName: 'Install Dependencies'
+
+# Add any additional build or deployment steps here if needed
+
+- job: Finalize
+  dependsOn: BuildAndDeploy
+  pool:
+    name: basole
+  steps:
+  - script: |
+      # Add any post-pipeline finalization steps here
+      echo "Finalizing pipeline..."
+    displayName: 'Finalize'
